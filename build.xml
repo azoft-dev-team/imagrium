@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="CftTests">
+    <property environment="env"/>
+    <property name="junit.output.dir" value="test-reports"/>
+   
+    <target name="build" depends="clean,runtests,junitreport"/>
+	
+    <target name="runtests">
+	<exec executable="${basedir}/env/jython32.bat">
+	    <arg value="run.py"/>
+	    <arg value="conf/android_settings.conf"/>		
+		<env key="CLASSPATH" value="${basedir}/jars/sikuli-script.jar"/>
+		<env key="PATH" value="${env.Path};${basedir}/jars/libs"/>
+	</exec>
+    </target>
+ 
+     <target name="clean">
+        <delete dir="${junit.output.dir}" failonerror="false"/>
+		<mkdir dir="${junit.output.dir}"/>
+    </target>
+          
+    
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+    
+ </project>
