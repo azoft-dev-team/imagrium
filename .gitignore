@@ -1,4 +1,5 @@
 *$py.class
-
-/.pydevproject
-/.project
+test-reports/**
+env/**
+jars/**
+libs/**
