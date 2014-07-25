@@ -16,4 +16,23 @@ The second (image-based) approach is normally implemented as a record-and-replay
 
  > Allow for CI support and convenient code debugging. 
 
-This project stands on the shoulders of giants: Sikuli for actions on images, the Jython unittest library for running tests, and Apache Ant for test running and reporting, all wrapped into a PyDev project. You can use it as a template to write your own pages and tests, and of course you can run/debug it in Eclipse (in my view Eclipse is better than Sikuli IDE as it provides tools for collaboration, refactoring, debugging).
+This project stands on the shoulders of giants: [Sikuli][1] for actions on images, the [Jython][2] unittest library for running tests, and [Apache Ant][3] for test running and reporting, all wrapped into a [PyDev][4] project. You can use it as a template to write your own pages and tests, and of course you can run/debug it in Eclipse (in my view Eclipse is better than Sikuli IDE as it provides tools for collaboration, refactoring, debugging).
+What's more, the framework is designed to be seamlessly integrated into [Jenkins][5], so that you can simply attach a worker with emulators and necessary SDKs installed and run an ant script to perform testing and collect results.
+
+> Guarantee the same initial system state for all tests.
+
+I borrowed the idea about independence of test cases run from jUnit as it eases the process of running tests in parallel or performing selective runs. One more thing to consider was handling of failed tests. I wanted a simple way to bring the system back to the initial state regardless of the test execution status (say, if a test failed somewhere in the middle). For this I used emulator snapshots on Android and the simulator reset feature on iOS.
+
+> Ensure the mobile OS emulator responds in reasonable time.
+
+I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Reflectico uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
+
+
+
+
+  [1]: http://www.sikuli.org/ "Sikuli"
+  [2]: http://www.jython.org "Jython"
+  [3]: http://ant.apache.org/ "Apache Ant"
+  [4]: http://pydev.org/ "PyDev"
+  [5]: http://jenkins-ci.org/ "Jenkins"
+  [6]: http://www.genymotion.com "Genymotion"
