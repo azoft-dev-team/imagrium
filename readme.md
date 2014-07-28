@@ -1,5 +1,4 @@
-About
-------
+# About #
 *Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method. The core principles of the framework (which are reflected in its design) are:
 > Share test code base between platforms. 
 
@@ -28,7 +27,16 @@ I borrowed the idea about independence of test cases run from jUnit as it eases 
 I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Reflectico uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
 
 
+----------
 
+
+If you share these principles and considering between frameworks which use them, I'd recommend you to give Reflectico a chance to become your testing automation tool.
+
+# Quick Demo #
+ 
+ Before going deeply into the framework guts, I'd like you to watch the following video which outlines the Reflectico abilities:
+ 
+ [![Mobile Test Automation of iOS and Android Applications](http://img.youtube.com/vi/IUJOzHMKZgo/0.jpg)](http://www.youtube.com/watch?v=IUJOzHMKZgo)
 
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
@@ -36,3 +44,6 @@ I'm happy with the speed of the iOS simulator which comes with Xcode, but I cann
   [4]: http://pydev.org/ "PyDev"
   [5]: http://jenkins-ci.org/ "Jenkins"
   [6]: http://www.genymotion.com "Genymotion"
+  
+ 
+ 
