@@ -69,9 +69,90 @@ If you share these principles and considering between frameworks which use them,
 - Ensure the user who launches the test run has a permission to execute these scripts (if this is your current user, run  <code>chmod +x reset rotateScreen </code>).
 
 - **IMPORTANT!** Run `reset` and `rotateScreen` directly from *Terminal* under the user who will later run tests. Accept the pop-ups asking the permission to manipulate the system through the Terminal app.
+
+We're done with installing things, let's configure the system.
           
- 
- 
+# Configuration (Bare Minimum) #
+Before running tests, you need to configure the system by providing paths to the app under test and accompanying scripts, simulator name, port, and other misc settings.
+
+The sample config files are kept in the `conf` directory within the repo root. Provide the appropriate values for the following parameters to fit your needs.
+
+## Configuration of Android/Win ##
+This minimum info should be correctly substituted with your values in `conf/android_settings.conf`:
+
+[OS]
+
+`emulatorAvdName`. String. The name of your Genymotion emulator (preferrably without spaces). If you do not have it, create one.
+Example: 
+emulatorAvdName = and-4.2-hdpi_1
+
+`emulatorName`. String. The device name of the emulator (the output of the `adb devices` command when the emulator is launched). Usually the name is the IP address and port pair. 
+Example: 
+emulatorName = 169.254.215.108:5555
+
+----------
+
+[App]
+
+`shortname`. String. The *package* name in your manifest file.
+Example:
+shortname = mobi.hophop
+
+`name`. String. The name of the launch activity.
+Example:
+name = mobi.hophop/.ui.activities.SplashActivity
+
+`file`. String. The absolute path to the apk file. For testing purposes, you may grab the HopHop apk [here][16].
+Example:
+file = C:\tmp\apps\HopHop-debug-1.1.6.2407-11072014-1541.apk
+
+----------
+
+[Page]
+
+`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Reflectico works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
+Example:
+launchPageClass = src.pages.auth.auth\_page\_uselocation.AuthPageLocation
+
+## Configuration of iOS ##
+
+[SSH_ACCESS]
+
+`serverUrl`. String. The user and host which will be used for running tests. **IMPORTANT**: You must preliminarily add the user's public key to the `authorized_keys` file on the host to allow the authorization by key for this user (without entering any passwords). To check that the auth by key works, simply try to log in to the host by firing `ssh user@host`
+Example: 
+serverUrl = helpadmin@172.16.0.173
+
+----------
+
+[App]
+
+`appAbsolutePath`. String. The path to the app directory (here we suppose that you already have an Xcode build for simulator).
+Example:
+appAbsolutePath = /Users/Shared/apps/myEvents.app
+
+`launchLocation`. String. The absolute path to a directory, to which the app files will be copied (and from which the `ios-sim` will launch the app).
+Example: 
+launchLocation = /Users/Shared/appsRun
+
+`appName`. String. The application name.
+Example:
+appName = myEvents.app
+
+`appResetScript`. String. The absolute path to the script which resets the simulator data and settings. Must be executable by a user who runs tests.
+Example:
+appResetScript = /Users/Shared/scripts/reset
+
+`appRotateScript`. String. The absolute path to the script which rotates the simulator. Must be executable by a user who runs tests.
+Example:
+appRotateScript = /Users/Shared/scripts/rotateScreen
+
+`iosSimPath`. String. The absolute path to the app launching utility. Check that the correct path is provided.
+Example:
+iosSimPath = /usr/local/bin/ios-sim
+
+Once you're done with the settings, you can run the tests.
+
+# How to Run Tests#
 
 
   [1]: http://www.sikuli.org/ "Sikuli"
@@ -89,3 +170,4 @@ If you share these principles and considering between frameworks which use them,
   [13]: https://github.com/phonegap/ios-sim
   [14]: https://www.npmjs.org/
   [15]: http://brew.sh/
+  [16]: https://drive.google.com/file/d/0B0RtsuDjIW5BQ0ZVYUNVQlZqMms/edit?usp=sharing
