@@ -1,5 +1,5 @@
 # About #
-*Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method. The core principles of the framework (which are reflected in its design) are:
+*Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
 > Share test code base between platforms. 
 
 In other words, a functional test should be agnostic about an app platform, it should run both on Android and iOS. 
@@ -34,9 +34,45 @@ If you share these principles and considering between frameworks which use them,
 
 # Quick Demo #
  
- Before going deeply into the framework guts, I'd like you to watch the following video which outlines the Reflectico abilities:
- 
+ Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Reflectico abilities.
+ This video demonstrates iOS and Android test runs of the same app called **HopHop**.
+
  [![Mobile Test Automation of iOS and Android Applications](http://img.youtube.com/vi/IUJOzHMKZgo/0.jpg)](http://www.youtube.com/watch?v=IUJOzHMKZgo)
+
+# Installation #
+
+(1) Clone the git repo to the directory of your liking (versions for Win x64 and MacOS are available in the *win* and *ios* branches respectively).
+ 
+(2) Install [JDK 1.7.0\_55+][7]. The **JAVA_HOME** environment varialbe should be correctly set.
+ 
+(3) **(win)** If you wish to use Reflectico for Windows, make sure the following software is installed and configured:
+
+- Install [VirtualBox 4.2+][8]. 
+
+- Include the bin directory of VirtualBox in your PATH environment variable (otherwise, the `vboxmanage` utility will not be found).
+- Install [Genymotion 2.2+][9].
+- Include the genymotion in your PATH environemnt variable (we need this to run the `player` utility).
+- Install [Android SDK][10].
+- Include the platform-tools directory in your PATH environemnt variable (we need this to use the `adb` utility).
+- Install [Tesseract OCR][11].
+- Install [Apache Ant][12].
+
+
+----------
+
+(3) **(mac)** If you wish to use Reflectico for MacOS, make sure the following software is installed and configured:
+
+- [ios-sim][13]. Use [npm][14], [brew][15], or other ways to install it (visit the project and read the related docs). We use this utility to launch apps in the simulator.
+
+- We use the Apple Script snippets to reset and rotate the Simulator, so copy the `reset` and `rotateScreen` scripts from the `scripts` directory in the repo root to the place where you can execute them.
+
+- Ensure the user who launches the test run has a permission to execute these scripts (if this is your current user, run  <code>chmod +x reset rotateScreen </code>).
+
+- **IMPORTANT!** Run `reset` and `rotateScreen` directly from *Terminal* under the user who will later run tests. Accept the pop-ups asking the permission to manipulate the system through the Terminal app.
+          
+ 
+ 
+
 
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
@@ -44,6 +80,12 @@ If you share these principles and considering between frameworks which use them,
   [4]: http://pydev.org/ "PyDev"
   [5]: http://jenkins-ci.org/ "Jenkins"
   [6]: http://www.genymotion.com "Genymotion"
-  
- 
- 
+  [7]: http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
+  [8]: https://www.virtualbox.org/wiki/Downloads
+  [9]: http://www.genymotion.com "Genymotion"
+  [10]: http://developer.android.com/sdk/index.html
+  [11]: https://code.google.com/p/tesseract-ocr/ "Tesseract OCR"
+  [12]: http://ant.apache.org/ "Apache Ant"
+  [13]: https://github.com/phonegap/ios-sim
+  [14]: https://www.npmjs.org/
+  [15]: http://brew.sh/
