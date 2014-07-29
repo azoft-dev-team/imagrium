@@ -78,6 +78,7 @@ Before running tests, you need to configure the system by providing paths to the
 The sample config files are kept in the `conf` directory within the repo root. Provide the appropriate values for the following parameters to fit your needs.
 
 ## Configuration of Android/Win ##
+
 This minimum info should be correctly substituted with your values in `conf/android_settings.conf`:
 
 [OS]
@@ -116,6 +117,8 @@ launchPageClass = src.pages.auth.auth\_page\_uselocation.AuthPageLocation
 
 ## Configuration of iOS ##
 
+This minimum info should be correctly substituted with your values in `conf/ios_settings.conf`:
+
 [SSH_ACCESS]
 
 `serverUrl`. String. The user and host which will be used for running tests. **IMPORTANT**: You must preliminarily add the user's public key to the `authorized_keys` file on the host to allow the authorization by key for this user (without entering any passwords). To check that the auth by key works, simply try to log in to the host by firing `ssh user@host`
@@ -126,7 +129,7 @@ serverUrl = helpadmin@172.16.0.173
 
 [App]
 
-`appAbsolutePath`. String. The path to the app directory (here we suppose that you already have an Xcode build for simulator).
+`appAbsolutePath`. String. The path to the app directory (here we suppose that you already have an Xcode build for simulator). You can use [the HopHop app][17] for testing purposes.
 Example:
 appAbsolutePath = /Users/Shared/apps/myEvents.app
 
@@ -171,3 +174,4 @@ Once you're done with the settings, you can run the tests.
   [14]: https://www.npmjs.org/
   [15]: http://brew.sh/
   [16]: https://drive.google.com/file/d/0B0RtsuDjIW5BQ0ZVYUNVQlZqMms/edit?usp=sharing
+  [17]: https://drive.google.com/file/d/0B0RtsuDjIW5BdFJma3lVSTdmT0k/edit?usp=sharing
