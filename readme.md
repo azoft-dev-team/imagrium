@@ -209,7 +209,7 @@ class FbAuthPage(Page):
         self.inputText(text)
 ```
 It actually uses almost all the sweeties of Reflectico, so let's discuss them one by one.
-## Resource Definition and Localization ##
+## Field Definition and Localization ##
 Let's start from this line:
 ``` python
     email = ResourceLoader([Resource.fbEmailFieldiOS, Resource.fbEmailFieldiOS_ru])
@@ -278,10 +278,10 @@ If you looked attentively at the `FbAuthPage` code, you could notice this line:
 ``` python
 self.email.click()
 ```
-Actually each field is a Sikuli [Match][18] object which exposees the corresponding methods and attributes. You can do whatever the specification says with page fields.  
+Actually each field is a Sikuli [Match][18] object which exposees the corresponding methods and attributes. You can do whatever the specification says with page fields (in our example, we click the element).
 
 ## Access to Configuration ##
-In the code snippet of the `FbAuthPage` class we can see this line:
+In the code snippet of the `FbAuthPage` class, we can see this line:
 ``` python
 self.settings = settings
 ```
@@ -291,11 +291,12 @@ Example:
 ``` python
 self.settings.get("Facebook", "email")
 ```
+This instance is passed from page to page.
 
 ## OS-Dependent Functions ##
-Eventually you'll need to enter a text, emulate the Back hardware button on Android or do some other OS-specific work. In the `FbAuthPage` class we used the `inputText()` method to enter the text, but it is not found neither in the class not in its parent classes. 
+Eventually you'll need to enter a text, emulate the Back hardware button on Android or do some other OS-specific work. In the `FbAuthPage` class we used the `inputText()` method to enter the text, but it is not found either in the class or in its parent classes. 
 
-It is included into the parent mixin of OS-dependent pages. To be more precise:
+Instead, it is included into the parent mixin of OS-dependent pages. To be more precise:
 
 for iOS (as `iOSPage`) ...
 ``` python
@@ -307,6 +308,26 @@ and for Android (as `AndroidPage`)...
 class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
 ```
 **Brief summary**: to use OS-dependent functions like text enter, add the corresponding classes into your OS-dependent pages. 
+
+## Pages Organization ##
+Now you know almost everything you need about pages, the last question is how to correctly load pages and navigate between them.
+
+To make things easy to maintain, Reflectico offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
+
+The classes organization has the following two levels connected by a child-parent dependency:
+
+ 1. A *generic* page which contains all the common page logic (the `FbAuthPage` class in our example). It has implementations of all methods and default fields (like `email`, `password`, or `fillEmail()`). The methods are deemed to perform the same operations on iOS and Android (filling a form in our example).
+ 
+ 2.  OS-dependent pages declare resource deviations (OS-specific colors, UI widgets, sizes, etc.). These pages must have specifically-formatted names:
+ * An iOS page **is required** to be named **[GENERIC PAGE NAME] + "iOS"**, example: `FbAuthPageiOS`. This class must inherit from the generic page (`FbAuthPage`).
+
+ * An Android page presentation depends on two factors - density and OS version. First, the system tries to load the **[GENERIC PAGE NAME] + "\_" +"[MAJOR VER]" + "\_"+"MINOR\_VER" + "Android"** class. Example: `FbAuthPage_4_2_Android`. If it didn't find the class, it tries the Android-generic class pattern: **[GENERIC PAGE NAME] + "Android"**. For example: `FbAuthPageAndroid`.
+
+If a system fails to find a page class, it throws an AssertionError exception with the text: *Could not find the page from configuration, please add it*.
+
+**Brief summary**: The page load mechanism unveils the common way of thinking when creating pages. **First, create a generic page, add all necessary logic, and then expand it according to your needs**. When you complete creating the pages for a new platform/density, run the same test with a different configuration, and the system does all the heavy lifting for you.
+
+
 
 
   [1]: http://www.sikuli.org/ "Sikuli"
