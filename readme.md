@@ -155,7 +155,158 @@ iosSimPath = /usr/local/bin/ios-sim
 
 Once you're done with the settings, you can run the tests.
 
-# How to Run Tests#
+# How to Run Tests #
+If you've decided to use the demo app (HopHop) and configured the basic parameters, you should be able to run the sample test on Android+win/iOS+mac simulators or both.
+
+To do it, locate the git repo root from the command line and run:
+`ant`
+
+The system will start preparing the snapshot giving the valuable output on the progress to the stdout. If the test has passed at least a couple of steps, your system is correctly configured, and you can use it to write tests for your own apps.
+**Congratulations!**
+
+# How to Write Tests #
+## About Pages ##
+After the demo app test runs as charm, you generally would like to write some tests for your own app. It's time to do it!
+
+The code you'll typically write when creating tests for an app can be divided into two groups: **Pages** and **Tests**. A *test* in this grouping is a sequence of operations on certain pages, for example:
+``` python
+authPage = AuthPage.load(AppLauncher.box, self.settings)
+fbAuthPage = authPage.signUpFb()
+fbAuthPage.fillEmail(self.settings.get("Facebook", "email"))
+fbAuthPage.fillPassword(self.settings.get("Facebook", "password"))
+fbConfirmPage = fbAuthPage.login()
+LobbyPage = fbConfirmPage.confirm() 
+```
+As we can read from the snippet, the test first loads the *Authorization* page, then follows from it to the *Facebook Authorization* page, fills in the necessary data to log in, confirms the user, and finally loads the *Lobby* page. In other words, it just surfs through pages and performs requested operations, leaving all juicy details on how to do this to pages.
+
+Thus, you'll get the 80% of success once you understand how to create pages. Hopefully, this is not that hard:)
+
+A *page* is a Jython presentation of an app page/screen/activity. Technically it is a class with fields and methods to operate on these fields.
+
+The most complex page looks as follows: 
+``` python
+class FbAuthPage(Page):
+
+    email = ResourceLoader([Resource.fbEmailFieldiOS, Resource.fbEmailFieldiOS_ru])
+    password = ResourceLoader([Resource.fbPasswordFieldiOS, Resource.fbPasswordFieldiOS_ru])
+    actionLogin = ResourceLoader([Resource.fbLoginBtniOS, Resource.fbLoginBtniOS_ru])
+        
+    def __init__(self, box, settings):
+        super(FbAuthPage, self).__init__(box, settings)
+        
+        self.email = self.box
+        self.password = self.box
+        self.actionLogin = self.box
+        
+        self.settings = settings
+        self.waitPageLoad()
+
+        self.checkIfLoaded(['email', 'password'])
+        
+    def fillEmail(self, text):
+        self.email.click()
+        self.waitPageLoad()
+        self.inputText(text)
+```
+It actually uses almost all the sweeties of Reflectico, so let's discuss them one by one.
+## Resource Definition and Localization ##
+Let's start from this line:
+``` python
+    email = ResourceLoader([Resource.fbEmailFieldiOS, Resource.fbEmailFieldiOS_ru])
+```
+The snippet associates a page field (in our case, the email input field) with one of the graphic assets (images or text labels). Here we provide two resources - one for English and one for Russian language. When a page requests the input field, the system will try to sequentially find one of these resources and will stop after the first success.
+
+By convention, app resources are kept under the `res` directory in the repo root. You may call them directly, like this, 
+``` python
+    email = ResourceLoader("res/pages/ios/fb_auth/fbEmailFieldiOS.png")
+```
+or something like this:
+``` python
+    email = ResourceLoader(["res/pages/ios/fb_auth/fbEmailFieldiOS.png", "res/pages/ios/fb_auth/fbEmailFieldiOS_ru.png"])
+```
+
+but for maintenance convenience the Resource class keeps resource paths mapping.
+
+**Brief summary**: If you want to manipulate a page field (an icon, a label, an input, or something else), first create a page class and define the field using the `ResourcesLoader` instance.
+
+## Fields Initialization and Check-up ##
+... and we continue with stumbling on our feature-rich page (the `FbAuthPage` class)
+First to note, it is **necessary to inherit each page from the Page class**.
+``` python
+class FbAuthPage(Page):
+```
+as it enables some neat page-generic stuff like the method for waiting till a page loads.
+
+
+Another mandatory rule is to **call the parent constructor** on the page initialization.
+
+``` python
+    def __init__(self, box, settings):
+        super(FbAuthPage, self).__init__(box, settings)
+```
+
+The last peculiarity is that we normally want to limit the screen area where the system will search for a resource.
+... and normally we do it by these lines:
+``` python        
+        self.email = self.box
+        self.password = self.box
+```
+The box parameter itself is initially calculated shortly after the snapshot is started but before launching the app under test (the system does this under the hood). The parameter defines the borders of the emulator/simulator by finding the horizontal line and vertical line and calculating the rectangle basing on these two values. 
+
+**IMPORTANT 1**: If you see something like the *"Unable to get the simulator frame"* error while running the tests, you need to make sure the horizontal and vertical borders present on the screen (see respective images in `res/pages/android/hdpi/core` or `res/pages/ios/core` and update them as necessary to fit your emulator presentation).
+
+**IMPORTANT 2**: The system searches for resources only on the first display (Screen 0), so it may not find the emulator frame if you have the emulator on a different display.
+
+This rectange is kept in the `AppLauncher.box` class field, so you can use it in tests, for instance.
+
+In some exotic cases you may want to locate an element beyond the emulator frame (say, a hardware button). In this casejust don't assign anything to the fields on the page initialization.
+
+As soon as you have fields at hands, you may need to verify that they actually present in the page. Looking at this under a different angle, this is the only way for you to verify that the loaded page is the one you actually need. For this verification, use the following one-liner:
+
+``` python
+self.checkIfLoaded(['email', 'password'])
+```
+
+Note that not all fields are necessarily visible on the page launch, specify only those that are visible.
+
+If the system does not find all the fields, it will throw the *AssertionError* exception which ends the test with a failure (and of course say some swear words to stdout).
+
+**Brief summary**: If you want the system to find elements within the emulator borders, assign the elements to `self.box`. It is a good practice to identify the page by its elements using `self.checkIfLoaded()`.
+
+## Attributes and Methods of a Field ##
+If you looked attentively at the `FbAuthPage` code, you could notice this line:
+``` python
+self.email.click()
+```
+Actually each field is a Sikuli [Match][18] object which exposees the corresponding methods and attributes. You can do whatever the specification says with page fields.  
+
+## Access to Configuration ##
+In the code snippet of the `FbAuthPage` class we can see this line:
+``` python
+self.settings = settings
+```
+The `settings` attribute is a [ConfigParser][19] instance associated with the current configuration file (with which you launch your tests, either *android\_settings.conf* or *ios\_settings.conf*), so you can work with it using the standard methods like `get()`.
+
+Example: 
+``` python
+self.settings.get("Facebook", "email")
+```
+
+## OS-Dependent Functions ##
+Eventually you'll need to enter a text, emulate the Back hardware button on Android or do some other OS-specific work. In the `FbAuthPage` class we used the `inputText()` method to enter the text, but it is not found neither in the class not in its parent classes. 
+
+It is included into the parent mixin of OS-dependent pages. To be more precise:
+
+for iOS (as `iOSPage`) ...
+``` python
+class FbAuthPageiOS(FbAuthPage, iOSPage):
+    pass
+```
+and for Android (as `AndroidPage`)...
+``` python
+class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
+```
+**Brief summary**: to use OS-dependent functions like text enter, add the corresponding classes into your OS-dependent pages. 
 
 
   [1]: http://www.sikuli.org/ "Sikuli"
@@ -175,3 +326,5 @@ Once you're done with the settings, you can run the tests.
   [15]: http://brew.sh/
   [16]: https://drive.google.com/file/d/0B0RtsuDjIW5BQ0ZVYUNVQlZqMms/edit?usp=sharing
   [17]: https://drive.google.com/file/d/0B0RtsuDjIW5BdFJma3lVSTdmT0k/edit?usp=sharing
+  [18]: http://doc.sikuli.org/match.html
+  [19]: https://docs.python.org/2/library/configparser.html
