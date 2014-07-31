@@ -51,7 +51,6 @@ class ResourceLoader(object):
 
 class Page(object):
    
-    actionLogin = ResourceLoader(Resource.fbLoginBtniOS)
     keyboardiOsTop = ResourceLoader(Resource.keyboardiOsTop)
     
     def __init__(self, box, settings):

@@ -321,9 +321,26 @@ The classes organization has the following two levels connected by a child-paren
  2.  OS-dependent pages declare resource deviations (OS-specific colors, UI widgets, sizes, etc.). These pages must have specifically-formatted names:
  * An iOS page **is required** to be named **[GENERIC PAGE NAME] + "iOS"**, example: `FbAuthPageiOS`. This class must inherit from the generic page (`FbAuthPage`).
 
- * An Android page presentation depends on two factors - density and OS version. First, the system tries to load the **[GENERIC PAGE NAME] + "\_" +"[MAJOR VER]" + "\_"+"MINOR\_VER" + "Android"** class. Example: `FbAuthPage_4_2_Android`. If it didn't find the class, it tries the Android-generic class pattern: **[GENERIC PAGE NAME] + "Android"**. For example: `FbAuthPageAndroid`.
+ * An Android page presentation depends on two factors - density and OS version. First, the system tries to load the **[GENERIC PAGE NAME] + "\_" +"[MAJOR VER]" + "\_"+"MINOR\_VER" + "Android" + "SCREEN\_DENSITY"** class. Example: `FbAuthPage_4_2_AndroidHdpi`. If it didn't find the class, it tries the Android-generic class pattern: **[GENERIC PAGE NAME] + "Android" + "SCREEN\_DENSITY"**. For example: `FbAuthPageAndroidhdpi`.
 
 If a system fails to find a page class, it throws an AssertionError exception with the text: *Could not find the page from configuration, please add it*.
+
+Here how it looks like in practice:
+
+In a test (fragment)...
+``` python
+fbAuthPage = authPage.signUpFb()
+```
+In the generic page class for `authPage`...
+``` python
+def signUpFb(self):
+    self.actionAgreeTermsBtniOS.click()
+    self.actionSignUpFb.click()
+    return FbAuthPage.load(self.box, self.settings)
+
+```
+and `load()` is a system page-wide method which decides on a page to actually load depending on the run configuration (`FbAuthPageiOS` or `FbAuthPageAndroidHdpi`).
+
 
 **Brief summary**: The page load mechanism unveils the common way of thinking when creating pages. **First, create a generic page, add all necessary logic, and then expand it according to your needs**. When you complete creating the pages for a new platform/density, run the same test with a different configuration, and the system does all the heavy lifting for you.
 

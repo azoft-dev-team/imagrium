@@ -5,7 +5,6 @@ Created on 26.06.2013
 '''
 from libs.sikuli import Sikuli
 from src.core.app_launcher import AppLauncher
-from src.pages.auth.auth_page_uselocation import AuthPageLocation
 from unittest.util import strclass
 import logging
 import os
