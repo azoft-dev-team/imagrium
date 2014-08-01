@@ -1,5 +1,5 @@
 # About #
-*Imagrium* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
+*Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
 > Share test code base between platforms. 
 
 In other words, a functional test should be agnostic about an app platform, it should run both on Android and iOS. 
@@ -24,17 +24,17 @@ I borrowed the idea about independence of test cases run from jUnit as it eases 
 
 > Ensure the mobile OS emulator responds in reasonable time.
 
-I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Imagrium uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
+I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Reflectico uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
 
 
 ----------
 
 
-If you share these principles and considering between frameworks which use them, I'd recommend you to give Imagrium a chance to become your testing automation tool.
+If you share these principles and considering between frameworks which use them, I'd recommend you to give Reflectico a chance to become your testing automation tool.
 
 # Quick Demo #
  
- Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Imagrium abilities.
+ Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Reflectico abilities.
  This video demonstrates iOS and Android test runs of the same app called **HopHop**.
 
  [![Mobile Test Automation of iOS and Android Applications](http://img.youtube.com/vi/IUJOzHMKZgo/0.jpg)](http://www.youtube.com/watch?v=IUJOzHMKZgo)
@@ -45,7 +45,7 @@ If you share these principles and considering between frameworks which use them,
  
 (2) Install [JDK 1.7.0\_55+][7]. The **JAVA_HOME** environment varialbe should be correctly set.
  
-(3) **(win)** If you wish to use Imagrium for Windows, make sure the following software is installed and configured:
+(3) **(win)** If you wish to use Reflectico for Windows, make sure the following software is installed and configured:
 
 - Install [VirtualBox 4.2+][8]. 
 
@@ -60,7 +60,7 @@ If you share these principles and considering between frameworks which use them,
 
 ----------
 
-(3) **(mac)** If you wish to use Imagrium for MacOS, make sure the following software is installed and configured:
+(3) **(mac)** If you wish to use Reflectico for MacOS, make sure the following software is installed and configured:
 
 - [ios-sim][13]. Use [npm][14], [brew][15], or other ways to install it (visit the project and read the related docs). We use this utility to launch apps in the simulator.
 
@@ -111,7 +111,7 @@ file = C:\tmp\apps\HopHop-debug-1.1.6.2407-11072014-1541.apk
 
 [Page]
 
-`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Imagrium works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
+`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Reflectico works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
 Example:
 launchPageClass = src.pages.auth.auth\_page\_uselocation.AuthPageLocation
 
@@ -159,10 +159,19 @@ Once you're done with the settings, you can run the tests.
 If you've decided to use the demo app (HopHop) and configured the basic parameters, you should be able to run the sample test on Android+win/iOS+mac simulators or both.
 
 To do it, locate the git repo root from the command line and run:
+
 `ant`
 
 The system will start preparing the snapshot giving the valuable output on the progress to the stdout. If the test has passed at least a couple of steps, your system is correctly configured, and you can use it to write tests for your own apps.
 **Congratulations!**
+
+If you look in the related `build.xml` file, you'll notice what actually happens there. The test case run start point is the `run.py` file in the root directory of the project. it requires the config file as the first and the only one input parameter. Additionally, it requires some Sikuli dependencies to be added to the PATH and CLASSPATH environment variables (this should not be so important for Eclipse as long as you use the ready project file). So basically the ant runs
+
+`run.py conf/android_settings.conf`
+
+spiced up by some context.
+
+**P.S.** If you wish to dig line by line to understand the guts of the system, start from `run.py`.
 
 # How to Write Tests #
 ## About Pages ##
@@ -208,7 +217,7 @@ class FbAuthPage(Page):
         self.waitPageLoad()
         self.inputText(text)
 ```
-It actually uses almost all the sweeties of Imagrium, so let's discuss them one by one.
+It actually uses almost all the sweeties of Reflectico, so let's discuss them one by one.
 ## Field Definition and Localization ##
 Let's start from this line:
 ``` python
@@ -312,7 +321,7 @@ class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
 ## Pages Organization ##
 Now you know almost everything you need about pages, the last question is how to correctly load pages and navigate between them.
 
-To make things easy to maintain, Imagrium offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
+To make things easy to maintain, Reflectico offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
 
 The classes organization has the following two levels connected by a child-parent dependency:
 
@@ -344,8 +353,47 @@ and `load()` is a system page-wide method which decides on a page to actually lo
 
 **Brief summary**: The page load mechanism unveils the common way of thinking when creating pages. **First, create a generic page, add all necessary logic, and then expand it according to your needs**. When you complete creating the pages for a new platform/density, run the same test with a different configuration, and the system does all the heavy lifting for you.
 
+# Tutorial: The Hello, World! Project #
+The given above information is enough to write test code, but to wire up all these details into a clear picture, I offer you a small tutorial which writes a test from the grounds up.
 
+First of all, the PyDev project setup for dummies. Skip it if you know how to do it. I use Eclipse 4.3, check specs for other versions though I think the steps should be similar.
 
+## 1. Set Up the PyDev Project ##
+
+### 1.1. Add the project to workspace ###
+Start from **File** > **Import** > **Git** > **Projects from git** and providing these details:
+![Provide the repo settings][20]
+
+During the wizard, specify the project destination inside your workspace:
+![Add the path within your workspace][21]
+
+Click **Next** like hell and **Finish** in the end.
+
+The sad news is that this wizard will fail to complete (crash-boom-bang). The good news is that it has created the directory and cloned the code into it, so we only need to create a new project associated with the code.
+
+Do it by running **File** > **PyDev Project**. In the form that opens specify _Jython_ as the interpreter. The interpreter executable (`jython.jar`) is found in the `env/` directory within the project root, you need to provide it when configuring the project interpreter.
+
+**Note**: I add the pysrc package as I believe it serves for debugging purposes, so please add it too.
+
+![The interpreter settings][22]
+
+This time it creates the project we need, but it reports the problem with the interpreter. Go to **Properties** (right-click the project root) > **PyDev - Interpreter/Grammar** and provide the interpreter you've just configured. Again :)
+
+### 1.2. Add a Run Configuration ###
+
+Check that Eclipse uses the x64 JVM by navigating to **Window** > **Preferences** > **Java** > **Installed JREs** (the x64 version must be given in bold).
+
+Create a Run Configuration by navigating to **Run options (the arrow next to the green icon with a triangle)** > **Run Configurations**. Click **Jython run** and provide these parameters:
+
+![Run configuration parameters][23]
+
+... and in the **Arguments**, specify the config file you'll use:
+
+![enter image description here][24]
+
+Click **Run**. Weeee! I've created your first project! Good work so far! 
+
+Enough for buttons and windows! Let's get busy with coding!
 
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
@@ -366,3 +414,8 @@ and `load()` is a system page-wide method which decides on a page to actually lo
   [17]: https://drive.google.com/file/d/0B0RtsuDjIW5BdFJma3lVSTdmT0k/edit?usp=sharing
   [18]: http://doc.sikuli.org/match.html
   [19]: https://docs.python.org/2/library/configparser.html
+  [20]: http://i.imgur.com/6zpDrDr.png "Create a git project dialog"
+  [21]: http://i.imgur.com/Ro3VwAf.png
+  [22]: http://i.imgur.com/vSuFKLH.png
+  [23]: http://i.imgur.com/fI0x6P6.png
+  [24]: http://i.imgur.com/GYLWqFm.png
