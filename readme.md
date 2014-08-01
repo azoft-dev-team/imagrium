@@ -371,7 +371,7 @@ Click **Next** like hell and **Finish** in the end.
 
 The sad news is that this wizard will fail to complete (crash-boom-bang). The good news is that it has created the directory and cloned the code into it, so we only need to create a new project associated with the code.
 
-Do it by running **File** > **PyDev Project**. In the form that opens specify _Jython_ as the interpreter. The interpreter executable (`jython.jar`) is found in the `env/` directory within the project root, you need to provide it when configuring the project interpreter.
+Do it by running **File** > **PyDev Project**. In the form that opens specify the path to which you've cloned the repo and  _Jython_ as the interpreter. The interpreter executable (`jython.jar`) is found in the `env/` directory within the project root, you need to provide it when configuring the project interpreter.
 
 **Note**: I add the pysrc package as I believe it serves for debugging purposes, so please add it too.
 
