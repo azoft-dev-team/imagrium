@@ -1,5 +1,5 @@
 # About #
-*Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
+*Imagrium* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
 > Share test code base between platforms. 
 
 In other words, a functional test should be agnostic about an app platform, it should run both on Android and iOS. 
@@ -24,17 +24,17 @@ I borrowed the idea about independence of test cases run from jUnit as it eases 
 
 > Ensure the mobile OS emulator responds in reasonable time.
 
-I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Reflectico uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
+I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Imagrium uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
 
 
 ----------
 
 
-If you share these principles and considering between frameworks which use them, I'd recommend you to give Reflectico a chance to become your testing automation tool.
+If you share these principles and considering between frameworks which use them, I'd recommend you to give Imagrium a chance to become your testing automation tool.
 
 # Quick Demo #
  
- Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Reflectico abilities.
+ Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Imagrium abilities.
  This video demonstrates iOS and Android test runs of the same app called **HopHop**.
 
  [![Mobile Test Automation of iOS and Android Applications](http://img.youtube.com/vi/IUJOzHMKZgo/0.jpg)](http://www.youtube.com/watch?v=IUJOzHMKZgo)
@@ -45,7 +45,7 @@ If you share these principles and considering between frameworks which use them,
  
 (2) Install [JDK 1.7.0\_55+][7]. The **JAVA_HOME** environment varialbe should be correctly set.
  
-(3) **(win)** If you wish to use Reflectico for Windows, make sure the following software is installed and configured:
+(3) **(win)** If you wish to use Imagrium for Windows, make sure the following software is installed and configured:
 
 - Install [VirtualBox 4.2+][8]. 
 
@@ -60,7 +60,7 @@ If you share these principles and considering between frameworks which use them,
 
 ----------
 
-(3) **(mac)** If you wish to use Reflectico for MacOS, make sure the following software is installed and configured:
+(3) **(mac)** If you wish to use Imagrium for MacOS, make sure the following software is installed and configured:
 
 - [ios-sim][13]. Use [npm][14], [brew][15], or other ways to install it (visit the project and read the related docs). We use this utility to launch apps in the simulator.
 
@@ -111,7 +111,7 @@ file = C:\tmp\apps\HopHop-debug-1.1.6.2407-11072014-1541.apk
 
 [Page]
 
-`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Reflectico works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
+`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Imagrium works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
 Example:
 launchPageClass = src.pages.auth.auth\_page\_uselocation.AuthPageLocation
 
@@ -217,7 +217,7 @@ class FbAuthPage(Page):
         self.waitPageLoad()
         self.inputText(text)
 ```
-It actually uses almost all the sweeties of Reflectico, so let's discuss them one by one.
+It actually uses almost all the sweeties of Imagrium, so let's discuss them one by one.
 ## Field Definition and Localization ##
 Let's start from this line:
 ``` python
@@ -321,7 +321,7 @@ class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
 ## Pages Organization ##
 Now you know almost everything you need about pages, the last question is how to correctly load pages and navigate between them.
 
-To make things easy to maintain, Reflectico offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
+To make things easy to maintain, Imagrium offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
 
 The classes organization has the following two levels connected by a child-parent dependency:
 
