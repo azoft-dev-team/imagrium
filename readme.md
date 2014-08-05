@@ -523,7 +523,7 @@ The last step is to tie the two pages together. Update the `openConnectionProper
 ```
 Now we have two pages, and the first one, the Wi-Fi settings page, returns the connection properties page on calling `openConnectionProperties()`. 
 
-#### 1.3.3. Adding a Test
+### 1.4. Adding a Test
 Our test will simply checks that the connection status is *Excellent*. Before writing a test, please remove the contents of the `tests/` directory. When done, add the file `wifi_connection_status.py` to `tests/` and update it to look like:
 
 ``` python
@@ -539,7 +539,7 @@ class CheckWifiConnectionStatus(AppTestCase):
         wifiSettingsPage.openConnectionProperties()
 ```
 Nothing new here. The system loads the first page and this page requests the connection settings. Exciting! Time to configure and run this test.
-#### 1.3.4. Running a Test
+### 1.5. Running a Test
 Before we run this test, make sure your configuration file (`conf/android_settings.conf`) has these settings:
 [OS]
 debug = True
