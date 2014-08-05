@@ -412,8 +412,8 @@ Weeee! I've created your first project! Good work so far!
 
 Enough for buttons and windows! Let's get busy with coding!
 
-### 1.3. Wi-Fi Demo: Adding App Pages ###
-#### 1.3.1. Adding The First Page
+## 2. Add App Pages 
+### 2.1. Adding The First Page
 Imagrium is all about pages, so let's write some pages first. Before writing new pages, let's get rid of the legacy pages in the project you've got from Github. Don't be shy to remove the contents of `src/pages` (leave only **\_\_init\_\_.py** in the dir root, Jython needs this file to discover modules). 
 
 We are going to run on Android, so the page should additionally have the respective Android class (refer to [Pages Hierarchy][25]).
@@ -435,7 +435,7 @@ class WifiSettingsPageAndroidHdpi(WifiSettingsPage):
 ```
 
 this is the backbone of any page - a constructor and the Android version of the page.
-#### 1.3.2. Adding Resources and Other Pages
+### 2.2. Adding Resources and Other Pages
 The second step is to connect the Wi-Fi properties icon ![The Wi-Fi icon][26] to the `WifiSettingsPage` page.
 
 For this, firstly we need to save the associated asset to a directory within our project. Grab the icon using your favorite graphics editor, create a new directory `res/pages/android/hdpi/wifi_settings` and put the icon (we called it `connectionPropertiesIcon.png`) into the directory.
@@ -523,7 +523,7 @@ The last step is to tie the two pages together. Update the `openConnectionProper
 ```
 Now we have two pages, and the first one, the Wi-Fi settings page, returns the connection properties page on calling `openConnectionProperties()`. 
 
-### 1.4. Adding a Test
+## 3. Add a Test
 Our test will simply checks that the connection status is *Excellent*. Before writing a test, please remove the contents of the `tests/` directory. When done, add the file `wifi_connection_status.py` to `tests/` and update it to look like:
 
 ``` python
@@ -539,7 +539,7 @@ class CheckWifiConnectionStatus(AppTestCase):
         wifiSettingsPage.openConnectionProperties()
 ```
 Nothing new here. The system loads the first page and this page requests the connection settings. Exciting! Time to configure and run this test.
-### 1.5. Running a Test
+## 4. Run a Test
 Before we run this test, make sure your configuration file (`conf/android_settings.conf`) has these settings:
 [OS]
 debug = True
