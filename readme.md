@@ -1,5 +1,5 @@
 # About #
-*Imagrium* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
+*Reflectico* is a Jython framework for cross-platform testing of mobile applications basing on the **image recognition** method (and distributed under the MIT License terms). The core principles of the framework (which are reflected in its design) are:
 > Share test code base between platforms. 
 
 In other words, a functional test should be agnostic about an app platform, it should run both on Android and iOS. 
@@ -24,17 +24,17 @@ I borrowed the idea about independence of test cases run from jUnit as it eases 
 
 > Ensure the mobile OS emulator responds in reasonable time.
 
-I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Imagrium uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
+I'm happy with the speed of the iOS simulator which comes with Xcode, but I cannot say the same for the Android out-of-the-box emulator. I had hopes for HAXM and x86 images provided by Intel, but their problem is that they do not provide Google API which is used in the majority of apps my company develops. Only the 4.4 image ships this API, but unfortunately it does not work as stable as I expect. That's why the current version of Reflectico uses [Genymotion][6] and VirtualBox to create and manipulate snapshots.
 
 
 ----------
 
 
-If you share these principles and considering between frameworks which use them, I'd recommend you to give Imagrium a chance to become your testing automation tool.
+If you share these principles and considering between frameworks which use them, I'd recommend you to give Reflectico a chance to become your testing automation tool.
 
 # Quick Demo #
  
- Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Imagrium abilities.
+ Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Reflectico abilities.
  This video demonstrates iOS and Android test runs of the same app called **HopHop**.
 
  [![Mobile Test Automation of iOS and Android Applications](http://img.youtube.com/vi/IUJOzHMKZgo/0.jpg)](http://www.youtube.com/watch?v=IUJOzHMKZgo)
@@ -45,7 +45,7 @@ If you share these principles and considering between frameworks which use them,
  
 (2) Install [JDK 1.7.0\_55+][7]. The **JAVA_HOME** environment varialbe should be correctly set.
  
-(3) **(win)** If you wish to use Imagrium for Windows, make sure the following software is installed and configured:
+(3) **(win)** If you wish to use Reflectico for Windows, make sure the following software is installed and configured:
 
 - Install [VirtualBox 4.2+][8]. 
 
@@ -60,7 +60,7 @@ If you share these principles and considering between frameworks which use them,
 
 ----------
 
-(3) **(mac)** If you wish to use Imagrium for MacOS, make sure the following software is installed and configured:
+(3) **(mac)** If you wish to use Reflectico for MacOS, make sure the following software is installed and configured:
 
 - [ios-sim][13]. Use [npm][14], [brew][15], or other ways to install it (visit the project and read the related docs). We use this utility to launch apps in the simulator.
 
@@ -111,7 +111,7 @@ file = C:\tmp\apps\HopHop-debug-1.1.6.2407-11072014-1541.apk
 
 [Page]
 
-`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Imagrium works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
+`launchPageClass`. String. The Jython class of the page which should be initially launched (if this confuses you, please read more about how Reflectico works with pages). In other words, it is the start point for the app (the class which represents the first page after the app launch).
 Example:
 launchPageClass = src.pages.auth.auth\_page\_uselocation.AuthPageLocation
 
@@ -217,7 +217,7 @@ class FbAuthPage(Page):
         self.waitPageLoad()
         self.inputText(text)
 ```
-It actually uses almost all the sweeties of Imagrium, so let's discuss them one by one.
+It actually uses almost all the sweeties of Reflectico, so let's discuss them one by one.
 ## Field Definition and Localization ##
 Let's start from this line:
 ``` python
@@ -321,7 +321,7 @@ class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
 ## Pages Organization ##
 Now you know almost everything you need about pages, the last question is how to correctly load pages and navigate between them.
 
-To make things easy to maintain, Imagrium offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
+To make things easy to maintain, Reflectico offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
 
 The classes organization has the following two levels connected by a child-parent dependency:
 
@@ -355,6 +355,8 @@ and `load()` is a system page-wide method which decides on a page to actually lo
 
 # Tutorial: The Hello, World! Project #
 The given above information is enough to write test code, but to wire up all these details into a clear picture, I offer you a small tutorial which writes a test from the grounds up.
+
+*The example we are going to write will launch the Android Wi-Fi settings page and will check that the Wi-Fi connection signal is excellent*.
 
 First of all, the PyDev project setup for dummies. Skip it if you know how to do it. I use Eclipse 4.3, check specs for other versions though I think the steps should be similar.
 
@@ -391,9 +393,140 @@ Create a Run Configuration by navigating to **Run options (the arrow next to the
 
 ![enter image description here][24]
 
-Click **Run**. Weeee! I've created your first project! Good work so far! 
+**IMPORTANT1**: Check that your `conf/android_settings.conf` file has **debug = True**. This flag tells the system not to create a snapshot before launching tests and will save you a minute or two each time you would like to launch a test for some verification/demonstration/debugging purposes.
+
+**IMPORTANT2**: For the demo purposes, I use the Nexus 4.2 hdpi (480x800) emulator and highly recommend you to use the same device to avoid collisions with os-specific resources for now.
+
+Click **Run**. The system should find the simulator borders by outputting these lines to the output:
+```
+Loading resource: res/pages/android/hdpi/core/verticalBorder.png
+Loading resource: res/pages/android/hdpi/core/horizontalBorder.png
+```
+and without throwing the AssertionError exception... And then **it should fail** to launch an app as we hasn't yet specificed it.
+
+If the system is having problems with finding the emulator frame, view and update the resources in `res/pages/android/hdpi/core`. If the system cannot run the launch script, check that your emulator/app is correctly described in  `conf/android_settings.conf`. 
+
+Weeee! I've created your first project! Good work so far! 
 
 Enough for buttons and windows! Let's get busy with coding!
+
+### 1.3. Wi-Fi Demo: Adding App Pages ###
+#### 1.3.1. Adding The First Page
+Imagrium is all about pages, so let's write some pages first. Before writing new pages, let's get rid of the legacy pages in the project you've got from Github. Don't be shy to remove the contents of `src/pages` (leave only **\_\_init\_\_.py** in the dir root, Jython needs this file to discover modules). 
+
+We are going to run on Android, so the page should additionally have the respective android class.
+
+add the `wifi_settings.py` to `src/pages` with the following contents:
+
+``` python
+from src.core.page import Page, ResourceLoader
+from src.core.r import Resource
+
+class WifiSettingsPage(Page):    
+           
+    def __init__(self, box, settings):
+        super(WifiSettingsPage, self).__init__(box, settings)
+              
+
+class WifiSettingsPageAndroidHdpi(WifiSettingsPage):
+    pass
+```
+
+this is the backbone of any page - a constructor and the Android version of the page.
+#### 1.3.2. Adding Resources and Other Pages
+The second step is to connect the Wi-Fi properties icon ![The Wi-Fi icon][25] to the `WifiSettingsPage` page.
+
+For this, firstly we need to save the associated asset to a directory within our project. Grab the icon using your favorite graphics editor, create a new directory `res/pages/android/hdpi/wifi_settings` and put the icon (we called it `connectionPropertiesIcon.png`) into the directory.
+
+The second step is to declare the icon in `WifiSettingsPage` to be able to manage it by adding the `ResourceLoader` declaration.
+
+The updated class will look like:
+
+``` python
+class WifiSettingsPage(Page):    
+    
+    connectionPropertiesIcon = ResourceLoader(Resource.connectionPropertiesIcon)           
+    
+    def __init__(self, box, settings):
+        super(WifiSettingsPage, self).__init__(box, settings)
+```
+
+Additionally, you need map the `Resource.connectionPropertiesIcon` variable to the image path in the file `src/core/r.py`, inside the `Resource` class (you can add it just to the first line after the class declaration).
+
+``` python
+class Resource:
+    connectionPropertiesIcon = "res/pages/android/hdpi/wifi_settings/connectionPropertiesIcon.png"
+``` 
+
+One more note: It is a good practice to verify that the page actually has this icon. To verify this, update the `__init__` method to look like:
+
+``` python
+class WifiSettingsPage(Page):    
+    
+    connectionPropertiesIcon = ResourceLoader(Resource.connectionPropertiesIcon)           
+    
+    def __init__(self, box, settings):
+        super(WifiSettingsPage, self).__init__(box, settings)
+        self.connectionPropertiesIcon = self.box #limits the search region to the emulator frame
+        self.checkIfLoaded(['connectionPropertiesIcon']) #checks that all resrouces in the list are present
+```
+
+
+Fine, the Wi-Fi properties icon is declared, it's time to wire it with the properties page and with the action. For this, we need to add a new method `openConnectionProperties` to the `WifiSettingsPage` class; it'll be updated to:
+
+``` python
+class WifiSettingsPage(Page):    
+    
+    connectionPropertiesIcon = ResourceLoader(Resource.connectionPropertiesIcon)           
+    
+    def __init__(self, box, settings):
+        super(WifiSettingsPage, self).__init__(box, settings)
+        self.connectionPropertiesIcon = self.box
+        self.checkIfLoaded(['connectionPropertiesIcon'])
+        
+    def openConnectionProperties(self):
+        self.connectionPropertiesIcon.click()
+``` 
+We're almost done, but as we use PageObject, we need another page - `ConnectionPropertiesPage`.
+
+Again, add the new file `connection_properties.py` next to `wifi_settings.py` and add the page skeleton:
+
+``` python
+from src.core.page import Page, ResourceLoader
+from src.core.r import Resource
+
+
+class ConnectionPropertiesPage(Page):    
+    connectionStatusLabel = ResourceLoader(Resource.excellentStatusLabel)
+
+    def __init__(self, box, settings):
+        super(ConnectionPropertiesPage, self).__init__(box, settings)
+        self.waitPageLoad()
+        self.connectionStatusLabel = self.box #limit the search area to the emulator box
+        self.checkIfLoaded(['connectionStatusLabel'])              
+
+class ConnectionPropertiesPageAndroidHdpi(ConnectionPropertiesPage):
+    pass
+```
+As you can see, we've addded the `connectionStatusLabel` resource and assigned the `Resource.excellentStatusLabel` path to it. Please add the resouce and mapping as you did in the previous step.
+
+A user should see `connectionStatusLabel` when they open the page, so it is reasonable to add the check-up of this resource to the page initialization phase, but before that we need to be sure that the page is loaded. These two thoughts are implamented in `self.waitPageLoad()` and `self.checkIfLoaded()` calls of the code above. 
+
+The last step is to tie the two pages together. Update the `openConnectionProperties` method of `WifiSettingsPage` to look as follows:
+
+``` python
+    def openConnectionProperties(self):
+        self.connectionPropertiesIcon.click()
+        return ConnectionPropertiesPage.load(self.box, self.settings)
+```
+Now we have two pages, and the first one, the Wi-Fi settings page, returns the connection properties page on calling `openConnectionProperties()`. 
+
+#### 1.3.3. Adding a Test
+Our test will simply checks that the connection status is *Excellent*. Before writing a test, please remove the contents of the `tests/` directory. When done, add the file `wifi_connection_status.py` to `tests/` and update it to look like:
+
+``` python
+
+```
 
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
@@ -419,3 +552,4 @@ Enough for buttons and windows! Let's get busy with coding!
   [22]: http://i.imgur.com/vSuFKLH.png
   [23]: http://i.imgur.com/fI0x6P6.png
   [24]: http://i.imgur.com/GYLWqFm.png
+  [25]: http://i.imgur.com/QCTOE6b.png
