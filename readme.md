@@ -239,7 +239,7 @@ but for maintenance convenience the Resource class keeps resource paths mapping.
 **Brief summary**: If you want to manipulate a page field (an icon, a label, an input, or something else), first create a page class and define the field using the `ResourcesLoader` instance.
 
 ## Fields Initialization and Check-up ##
-... and we continue with stumbling on our feature-rich page (the `FbAuthPage` class)
+... and we continue with stumbling on our feature-rich page (the `FbAuthPage` class).
 First to note, it is **necessary to inherit each page from the Page class**.
 ``` python
 class FbAuthPage(Page):
@@ -303,7 +303,7 @@ self.settings.get("Facebook", "email")
 This instance is passed from page to page.
 
 ## OS-Dependent Functions ##
-Eventually you'll need to enter a text, emulate the Back hardware button on Android or do some other OS-specific work. In the `FbAuthPage` class we used the `inputText()` method to enter the text, but it is not found either in the class or in its parent classes. 
+Eventually you'll need to enter a text, emulate the Back hardware button on Android or do some other OS-specific work. In the `FbAuthPage` class we used the `inputText()` method to enter the text, but it is not found neither in the class or in its parent classes. 
 
 Instead, it is included into the parent mixin of OS-dependent pages. To be more precise:
 
@@ -316,18 +316,20 @@ and for Android (as `AndroidPage`)...
 ``` python
 class FbAuthPageAndroidHdpi(FbAuthPage, AndroidPage):
 ```
-**Brief summary**: to use OS-dependent functions like text enter, add the corresponding classes into your OS-dependent pages. 
+**Brief summary**: to use OS-dependent functions like text enter, add the corresponding mixins to your OS-dependent pages. 
 
 ## Pages Organization ##
 Now you know almost everything you need about pages, the last question is how to correctly load pages and navigate between them.
 
 To make things easy to maintain, Imagrium offers the specifically formatted organization of classes which represent pages. The big idea of this organization is to let the system decide which exactly page to load (iOS or Android page? which density? for which version?) when one page tries to load another page (by the `load()` method). The system makes this decision examining the configuration file, the [OS] section.
 
-The classes organization has the following two levels connected by a child-parent dependency:
+The classes organization has the following two-tiered hierarchy:
 
  1. A *generic* page which contains all the common page logic (the `FbAuthPage` class in our example). It has implementations of all methods and default fields (like `email`, `password`, or `fillEmail()`). The methods are deemed to perform the same operations on iOS and Android (filling a form in our example).
  
  2.  OS-dependent pages declare resource deviations (OS-specific colors, UI widgets, sizes, etc.). These pages must have specifically-formatted names:
+
+Remarks:
  * An iOS page **is required** to be named **[GENERIC PAGE NAME] + "iOS"**, example: `FbAuthPageiOS`. This class must inherit from the generic page (`FbAuthPage`).
 
  * An Android page presentation depends on two factors - density and OS version. First, the system tries to load the **[GENERIC PAGE NAME] + "\_" +"[MAJOR VER]" + "\_"+"MINOR\_VER" + "Android" + "SCREEN\_DENSITY"** class. Example: `FbAuthPage_4_2_AndroidHdpi`. If it didn't find the class, it tries the Android-generic class pattern: **[GENERIC PAGE NAME] + "Android" + "SCREEN\_DENSITY"**. For example: `FbAuthPageAndroidhdpi`.
@@ -340,7 +342,7 @@ In a test (fragment)...
 ``` python
 fbAuthPage = authPage.signUpFb()
 ```
-In the generic page class for `authPage`...
+`AuthPage`, the generic class for the `authPage` variable, has the general method:
 ``` python
 def signUpFb(self):
     self.actionAgreeTermsBtniOS.click()
@@ -373,7 +375,7 @@ Click **Next** like hell and **Finish** in the end.
 
 The sad news is that this wizard will fail to complete (crash-boom-bang). The good news is that it has created the directory and cloned the code into it, so we only need to create a new project associated with the code.
 
-Do it by running **File** > **PyDev Project**. In the form that opens specify the path to which you've cloned the repo and  _Jython_ as the interpreter. The interpreter executable (`jython.jar`) is found in the `env/` directory within the project root, you need to provide it when configuring the project interpreter.
+Do it by running **File** > **PyDev Project**. In the form that opens specify the name corresponging to the path you've used to clone the repo (*imagrium* in our example) and  _Jython_ as the interpreter. Click the *Please configure your...* link and click *New*. The interpreter executable (`jython.jar`) is found in the `env/` directory within the project root, you need to provide it when configuring the project interpreter.
 
 **Note**: I add the pysrc package as I believe it serves for debugging purposes, so please add it too.
 
@@ -385,7 +387,7 @@ This time it creates the project we need, but it reports the problem with the in
 
 Check that Eclipse uses the x64 JVM by navigating to **Window** > **Preferences** > **Java** > **Installed JREs** (the x64 version must be given in bold).
 
-Create a Run Configuration by navigating to **Run options (the arrow next to the green icon with a triangle)** > **Run Configurations**. Click **Jython run** and provide these parameters:
+Create a Run Configuration by navigating to **Run options (the arrow next to the green icon with a triangle)** > **Run Configurations**. Click **Jython run** and provide the project (*imagrium*) and the main module (`run.py`):
 
 ![Run configuration parameters][23]
 
@@ -414,9 +416,9 @@ Enough for buttons and windows! Let's get busy with coding!
 #### 1.3.1. Adding The First Page
 Imagrium is all about pages, so let's write some pages first. Before writing new pages, let's get rid of the legacy pages in the project you've got from Github. Don't be shy to remove the contents of `src/pages` (leave only **\_\_init\_\_.py** in the dir root, Jython needs this file to discover modules). 
 
-We are going to run on Android, so the page should additionally have the respective android class.
+We are going to run on Android, so the page should additionally have the respective Android class (refer to [Pages Hierarchy][25]).
 
-add the `wifi_settings.py` to `src/pages` with the following contents:
+Hands in code! Add the `wifi_settings.py` to `src/pages` with the following contents:
 
 ``` python
 from src.core.page import Page, ResourceLoader
@@ -434,11 +436,11 @@ class WifiSettingsPageAndroidHdpi(WifiSettingsPage):
 
 this is the backbone of any page - a constructor and the Android version of the page.
 #### 1.3.2. Adding Resources and Other Pages
-The second step is to connect the Wi-Fi properties icon ![The Wi-Fi icon][25] to the `WifiSettingsPage` page.
+The second step is to connect the Wi-Fi properties icon ![The Wi-Fi icon][26] to the `WifiSettingsPage` page.
 
 For this, firstly we need to save the associated asset to a directory within our project. Grab the icon using your favorite graphics editor, create a new directory `res/pages/android/hdpi/wifi_settings` and put the icon (we called it `connectionPropertiesIcon.png`) into the directory.
 
-The second step is to declare the icon in `WifiSettingsPage` to be able to manage it by adding the `ResourceLoader` declaration.
+Then declare the icon in `WifiSettingsPage` to be able to manage it by adding the `ResourceLoader` declaration (see [Resource Definition][27]).
 
 The updated class will look like:
 
@@ -451,14 +453,14 @@ class WifiSettingsPage(Page):
         super(WifiSettingsPage, self).__init__(box, settings)
 ```
 
-Additionally, you need map the `Resource.connectionPropertiesIcon` variable to the image path in the file `src/core/r.py`, inside the `Resource` class (you can add it just to the first line after the class declaration).
+Additionally, you need to map the `Resource.connectionPropertiesIcon` variable to the image path in the file `src/core/r.py`, inside the `Resource` class (you can add it just to the first line after the class declaration).
 
 ``` python
 class Resource:
     connectionPropertiesIcon = "res/pages/android/hdpi/wifi_settings/connectionPropertiesIcon.png"
 ``` 
 
-One more note: It is a good practice to verify that the page actually has this icon. To verify this, update the `__init__` method to look like:
+One more note: It is a good practice to verify that the page actually has this icon as more or less this assures us that we are on the page we wish. To verify the icon presence, update the `__init__` method to look like:
 
 ``` python
 class WifiSettingsPage(Page):    
@@ -472,7 +474,7 @@ class WifiSettingsPage(Page):
 ```
 
 
-Fine, the Wi-Fi properties icon is declared, it's time to wire it with the properties page and with the action. For this, we need to add a new method `openConnectionProperties` to the `WifiSettingsPage` class; it'll be updated to:
+Fine, the Wi-Fi properties icon is declared, it's time to wire it with the properties page. For this, we need to add a new method `openConnectionProperties` to the `WifiSettingsPage` class so that the class will be updated to:
 
 ``` python
 class WifiSettingsPage(Page):    
@@ -510,7 +512,7 @@ class ConnectionPropertiesPageAndroidHdpi(ConnectionPropertiesPage):
 ```
 As you can see, we've addded the `connectionStatusLabel` resource and assigned the `Resource.excellentStatusLabel` path to it. Please add the resouce and mapping as you did in the previous step.
 
-A user should see `connectionStatusLabel` when they open the page, so it is reasonable to add the check-up of this resource to the page initialization phase, but before that we need to be sure that the page is loaded. These two thoughts are implamented in `self.waitPageLoad()` and `self.checkIfLoaded()` calls of the code above. 
+A user should see `connectionStatusLabel` when they open the page, so it is reasonable to add the check-up of this resource to the page initialization phase, but before that we need to be sure that the page is loaded. These two thoughts are implemented in `self.waitPageLoad()` and `self.checkIfLoaded()` calls of the code above. 
 
 The last step is to tie the two pages together. Update the `openConnectionProperties` method of `WifiSettingsPage` to look as follows:
 
@@ -525,8 +527,44 @@ Now we have two pages, and the first one, the Wi-Fi settings page, returns the c
 Our test will simply checks that the connection status is *Excellent*. Before writing a test, please remove the contents of the `tests/` directory. When done, add the file `wifi_connection_status.py` to `tests/` and update it to look like:
 
 ``` python
+from src.core.app_launcher import AppLauncher
+from src.core.testcase import AppTestCase
+from src.pages.wifi_settings import WifiSettingsPage
 
+
+class CheckWifiConnectionStatus(AppTestCase):
+       
+    def testConnectionStatus(self):
+        wifiSettingsPage = WifiSettingsPage.load(AppLauncher.box, self.settings)
+        wifiSettingsPage.openConnectionProperties()
 ```
+Nothing new here. The system loads the first page and this page requests the connection settings. Exciting! Time to configure and run this test.
+#### 1.3.4. Running a Test
+Before we run this test, make sure your configuration file (`conf/android_settings.conf`) has these settings:
+[OS]
+debug = True
+
+----------
+
+[App]
+name = com.android.settings/.wifi.WifiSettings
+
+----------
+
+[Page]
+launchPageClass = src.pages.wifi_settings.WifiSettingsPage
+
+----------
+
+[System]
+testcaseFilter = 
+
+The first setting tells not to run the whole snapshot preparation routine, the second asks to launch the Wi-Fi settings activity, the third asks the system to launch the respective page on the activity start, and finally the last parameter requests to run all tests we have in the `src/tests` directory.
+
+Now you can start the emulator, wait till it is loaded, and then click **Run** in Eclipse.
+You should see this:
+ [![Hello, World Mobile App Test Automation Run](http://img.youtube.com/vi/ztDw4O-rK_Y/0.jpg)](http://www.youtube.com/watch?v=ztDw4O-rK_Y)
+
 
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
@@ -552,4 +590,6 @@ Our test will simply checks that the connection status is *Excellent*. Before wr
   [22]: http://i.imgur.com/vSuFKLH.png
   [23]: http://i.imgur.com/fI0x6P6.png
   [24]: http://i.imgur.com/GYLWqFm.png
-  [25]: http://i.imgur.com/QCTOE6b.png
+  [25]: #pages-organization
+  [26]: http://i.imgur.com/QCTOE6b.png
+  [27]: #field-definition-and-localization
