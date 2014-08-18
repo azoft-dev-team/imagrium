@@ -358,6 +358,10 @@ and `load()` is a system page-wide method which decides on a page to actually lo
 # Read Next 
 [Tutorial 1: Hello, World! Application][29]
 
+# Credits
+In the first term, I thank [Azoft][30] and personally my managers Dmitry Vasiliev & Oleg Valiev for allowing me to complete and contribute this project to public. I believe that Imagrium will find its place in the automation world since the future is in the mobile technologies, and we should try to polish existing tools, discover new, and share our experience to ultimately produce high-quality applications leaving as much routine as possible to automation tools. 
+I would also like to express my gratitude and appreciation to my colleagues and friends who kept me focused and pointed my head into the right direction, especially, I would like to note Rustam Baygulin for challenging (and extending) my Python knowledge and Anton Demenev for his technical administration support. The framework is written under the Django influence, so thanks Adrian Holovaty and Simon Willison for allowing me to think in "Django style".
+
   [1]: http://www.sikuli.org/ "Sikuli"
   [2]: http://www.jython.org "Jython"
   [3]: http://ant.apache.org/ "Apache Ant"
@@ -387,3 +391,4 @@ and `load()` is a system page-wide method which decides on a page to actually lo
   [27]: #field-definition-and-localization
   [28]: https://drive.google.com/file/d/0B0RtsuDjIW5BLWZLbGxWTGh6M1k/edit?usp=sharing
   [29]: https://github.com/azoft-dev-team/imagrium/wiki/Tutorial:-The-Hello,-World!-Project
+  [30]: http://www.azoft.com
