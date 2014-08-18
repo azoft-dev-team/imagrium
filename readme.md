@@ -32,6 +32,10 @@ I'm happy with the speed of the iOS simulator which comes with Xcode, but I cann
 
 If you share these principles and considering between frameworks which use them, I'd recommend you to give Imagrium a chance to become your testing automation tool.
 
+# OS Requirements #
+Imagrium is tested to work on Windows 7 64bit (Android only) and MacOS 10.9 (iOS only). Use the appropriate repo branch to get the correct image/text recognition libraries.
+We may add other popular OSes on request in the future.
+
 # Quick Demo #
  
  Before going deeply into the framework guts, I'd like you to watch the following video which showcases the Imagrium abilities.
