@@ -17,28 +17,43 @@ import time
 
 class ResourceLoader(object):
     
-    def __init__(self, resourceUrl, pageBox=None):
+    def __init__(self, resourceUrl, pageBox=None, minSimilarity=0.7):
         self.resourceUrl = resourceUrl
-        self.pageBox = pageBox      
+        self.pageBox = pageBox
+        self.minSimilarity = minSimilarity
         
     def __get__(self, instance, owner):
+        originalSimilarity = Sikuli.Settings.MinSimilarity 
+        Sikuli.Settings.MinSimilarity = self.minSimilarity
         logging.info("Loading resource: %s" % self.resourceUrl)
         res = None
-        if self.pageBox:
+        
+        def findInListOrSingle(source):
+            res = None
             if isinstance(self.resourceUrl, list):
                 for item in self.resourceUrl:
                     try:
-                        res = self.pageBox.find(item)
+                        res = source.find(item)
                         break
                     except FindFailed:
                         pass
                 if not res:
                     raise FindFailed("Could not find resource: %s" % self.resourceUrl)
             else:
-                res = self.pageBox.find(self.resourceUrl)
-                
-        else:
-            res = Sikuli.Screen().find(self.resourceUrl)
+                res = source.find(self.resourceUrl)
+            return res
+        
+        try:
+            if self.pageBox:
+                res = findInListOrSingle(self.pageBox)
+            else:
+                res = findInListOrSingle(Sikuli.Screen())
+
+        except FindFailed:
+            raise AssertionError("Could not find resource: %s" % self.resourceUrl)
+        
+        finally:
+            Sikuli.Settings.MinSimilarity = originalSimilarity
         self.res = res
         return self
 
@@ -46,6 +61,7 @@ class ResourceLoader(object):
         self.pageBox = value
     
     def __getattr__(self, name):
+        logging.info("OPERATION: %s, RESOURCE: %s" % (name, self.resourceUrl))
         return getattr(self.res, name)
 
 
@@ -68,7 +84,7 @@ class Page(object):
     def checkIfLoaded(self, fields):
         try:
             [getattr(self, field) for field in fields]
-        except FindFailed, e:
+        except AssertionError, e:
             logging.info(e.message)
             raise AssertionError("Unable to load page %s" % strclass(self.__class__))
             
@@ -105,13 +121,15 @@ class Page(object):
                 logging.info(e)
                 raise AssertionError("Could not find the page from configuration, please add it.")
     
-    def takeScreenShot(self, testcase, stepNum):
+    def takeScreenShot(self, testcase):
+        stepNum = testcase.screenShotsCaptured
         imgFilename = "{}-{}-step_{:02d}.png".format(strclass(testcase.__class__), testcase._testMethodName, stepNum)
         imgLocation = Sikuli.getBundlePath() + self.settings.get("System", "screenshotsPath")
         if not os.path.isdir(imgLocation):
             os.makedirs(imgLocation)
         screenshotFilename = Sikuli.Screen().capture(self.box)
         shutil.move(screenshotFilename, imgLocation + imgFilename)
+        testcase.screenShotsCaptured += 1
        
     def waitPageLoad(self, name=None, raiseIfDidntStart=False):
         """
@@ -177,16 +195,16 @@ class AndroidPage(object):
         super(AndroidPage, self).__init__(self, box, settings)
     
     def inputText(self, text):
-        subprocess.check_call(["adb", "shell", "input", "text", text])
+        subprocess.check_call(["adb", "-s", self.settings.get("OS", "emulatorName"), "shell", "input", "text", text])
 
     def submitForm(self):
-        subprocess.check_call(["adb", "shell", "input", "keyevent", "66"])
+        subprocess.check_call(["adb", "-s", self.settings.get("OS", "emulatorName"), "shell", "input", "keyevent", "66"])
 
     def unlockScreen(self):
-        subprocess.check_call(["adb", "shell", "input", "keyevent", "86"])
+        subprocess.check_call(["adb", "-s", self.settings.get("OS", "emulatorName"), "shell", "input", "keyevent", "86"])
         
     def back(self):
-        subprocess.check_call(["adb", "shell", "input", "keyevent", "4"])
+        subprocess.check_call(["adb", "-s", self.settings.get("OS", "emulatorName"), "shell", "input", "keyevent", "4"])
         
     @staticmethod
     def home(self):

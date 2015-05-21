@@ -7,16 +7,16 @@ from src.pages.bottom_navigation import BottomNavigation
 class HOP_325_Vihod_Is_Regima_Neaktivnosti(AppTestCase):
        
     def testmasterFbAuth(self):
-        authPageLocation = AuthPageLocation.load(AppLauncher.box, self.settings)
+        authPageLocation = self.initialPage
         authPage = authPageLocation.allowUseLocation()
-        authPage.takeScreenShot(self, 1)
+        authPage.takeScreenShot(self)
         
         fbAuthPage = authPage.signUpFb()
-        fbAuthPage.takeScreenShot(self, 2)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillEmail(self.settings.get("Facebook", "email"))
-        fbAuthPage.takeScreenShot(self, 3)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillPassword(self.settings.get("Facebook", "password"))
-        fbAuthPage.takeScreenShot(self, 4)
+        fbAuthPage.takeScreenShot(self)
         fbConfirmPage = fbAuthPage.login()
         
         postauthFollowPeople = fbConfirmPage.confirm()
@@ -35,26 +35,26 @@ class HOP_325_Vihod_Is_Regima_Neaktivnosti(AppTestCase):
         nav.actionGoExplore()
                 
         me = nav.actionGoMe()
-        me.takeScreenShot(self, 5)
+        me.takeScreenShot(self)
         
         self.requestRunTestCase('testhelperUnfollowUser')
         
         nav.actionGoExplore()
                 
         me = nav.actionGoMe()
-        me.takeScreenShot(self, 6)
+        me.takeScreenShot(self)
                 
     def testhelperFollowUser(self):
-        authPageLocation = AuthPageLocation.load(AppLauncher.box, self.settings)
+        authPageLocation = self.initialPage
         authPage = authPageLocation.allowUseLocation()
-        authPage.takeScreenShot(self, 1)
+        authPage.takeScreenShot(self)
         
         fbAuthPage = authPage.signUpFb()
-        fbAuthPage.takeScreenShot(self, 2)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillEmail(self.settings.get("Facebook", "email"))
-        fbAuthPage.takeScreenShot(self, 3)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillPassword(self.settings.get("Facebook", "password"))
-        fbAuthPage.takeScreenShot(self, 4)
+        fbAuthPage.takeScreenShot(self)
         fbConfirmPage = fbAuthPage.login()
         
         postauthFollowPeople = fbConfirmPage.confirm()
@@ -76,16 +76,16 @@ class HOP_325_Vihod_Is_Regima_Neaktivnosti(AppTestCase):
         nav.actionGoMe(inactive=False)
 
     def testhelperUnfollowUser(self):
-        authPageLocation = AuthPageLocation.load(AppLauncher.box, self.settings)
+        authPageLocation = self.initialPage
         authPage = authPageLocation.allowUseLocation()
-        authPage.takeScreenShot(self, 1)
+        authPage.takeScreenShot(self)
         
         fbAuthPage = authPage.signUpFb()
-        fbAuthPage.takeScreenShot(self, 2)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillEmail(self.settings.get("Facebook", "email"))
-        fbAuthPage.takeScreenShot(self, 3)
+        fbAuthPage.takeScreenShot(self)
         fbAuthPage.fillPassword(self.settings.get("Facebook", "password"))
-        fbAuthPage.takeScreenShot(self, 4)
+        fbAuthPage.takeScreenShot(self)
         fbConfirmPage = fbAuthPage.login()
         
         postauthFollowPeople = fbConfirmPage.confirm()

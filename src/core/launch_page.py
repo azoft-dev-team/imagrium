@@ -47,12 +47,11 @@ class LaunchPage(Page):
             isPageLoaded = False
             while not isPageLoaded:
                 try:
-                    page.load(pageBox, self.settings)
+                    return page.load(pageBox, self.settings)
                     isPageLoaded = True
                     
                 except AssertionError:
                     continue
-        
         except CalledProcessError:
             raise AssertionError("Unable to run a script that launches the app")
 

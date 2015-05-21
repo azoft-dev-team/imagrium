@@ -4,15 +4,13 @@ Created on 20.05.2013
 @author: Nosov Dmitriy
 '''
 from libs.sikuli import Sikuli
-from src.core.page import ResourceLoader
-from src.core.r import TestPlanConsts, Resource
+from src.core.r import TestPlanConsts
 from src.core.launch_page import LaunchPage
 from subprocess import CalledProcessError
-from telnetlib import Telnet
 import logging
-import os
 import subprocess
 import time
+
 
 class AppLauncher(object):
 
@@ -41,7 +39,7 @@ class AppLauncher(object):
                 appName = settings.get("App", "shortname")
                 time.sleep(5)
                 subprocess.call(('vboxmanage controlvm %s poweroff' % settings.get("OS", "emulatorAvdName")).split())
-                subprocess.call(('vboxmanage snapshot %s restore factory' % settings.get("OS", "emulatorAvdName")).split())
+                subprocess.call(('vboxmanage snapshot %s restore factory_reset' % settings.get("OS", "emulatorAvdName")).split())
                 subprocess.Popen(('player --vm-name %s' % settings.get("OS", "emulatorAvdName")).split())
                 AppLauncher.completeBoot(settings)                
                 subprocess.call(["adb", "-s", settings.get("OS", "emulatorName"), "uninstall", appName])
