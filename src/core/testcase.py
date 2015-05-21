@@ -12,11 +12,12 @@ import pika
 import shutil
 import time
 import unittest
-
+from src.core.r import ClientMessageConsts
 
 class AppTestCase(unittest.TestCase):
     
     failuresCount = 0
+    isFailed = False
     _context = {}
     
     def setUp(self):
@@ -29,7 +30,8 @@ class AppTestCase(unittest.TestCase):
             m = __import__(cl[0:d], globals(), locals(), [classname])
             return getattr(m, classname)
         
-        app.launch(_importClassByName(self.settings.get("Page", "launchPageClass")), app.box)
+        self.initialPage = app.launch(_importClassByName(self.settings.get("Page", "launchPageClass")), app.box)
+        self.screenShotsCaptured = 0 #will increment with parameter with each capture
          
     def tearDown(self):
         # I see this as the only way to apply a screenshot in case we have a failure before moving on to
@@ -39,6 +41,7 @@ class AppTestCase(unittest.TestCase):
             #wait a bit so that the system managed to take a screenshot
             time.sleep(2)
             AppTestCase.failuresCount += 1
+            self.isFailed = True
         if not self.settings.getboolean("OS", "debug"):
             AppLauncher.closeEmulator(self.settings)
 
@@ -58,6 +61,8 @@ class AppTestCase(unittest.TestCase):
     def onReceiveTestCaseRunResponse(self, ch, method, properties, body):
         logging.info("Received from the secondary client: %s " % body)
         ch.stop_consuming()
+        if body == ClientMessageConsts.TASK_FAILED:
+            raise AssertionError("Secondary worker failed to execute the test")
     
     def requestRunTestCase(self, testCaseNameFragment):
         
@@ -80,3 +85,8 @@ class AppTestCase(unittest.TestCase):
         channel.start_consuming()
         
         connection.close()
+        
+        
+    
+    def getVar(self):
+        pass 

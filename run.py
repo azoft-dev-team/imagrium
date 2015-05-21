@@ -36,7 +36,7 @@ class TestCaseRunnerMaster:
         if not settings.getboolean("OS", "debug"):
             AppLauncher.closeEmulator(settings) #if emulator is not recognized
         
-    def closeAllSlaves(self):
+    def closeAllSlaves(self):        
         connection = pika.BlockingConnection(pika.ConnectionParameters(
         host=self.settings.get("Multiclient", "rabbitHostUrl")))
         channel = connection.channel()
@@ -55,7 +55,10 @@ class TestCaseRunnerSlave:
         tCase = TestPlanLoader.getTestCaseByName(self.settings, body)
         if tCase:
             xmlrunner.XMLTestRunner(output='test-reports').run(tCase)
-        self.sendResponse(ClientMessageConsts.TASK_DONE)
+        if tCase.isFailed:
+            self.sendResponse(ClientMessageConsts.TASK_FAILED)
+        else:
+            self.sendResponse(ClientMessageConsts.TASK_DONE)
 
     def clientExit(self, ch, method, properties, body):
         """
