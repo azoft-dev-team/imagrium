@@ -74,8 +74,8 @@ class Page(object):
         logging.info("Starting page initialization: %s" % self.__class__)
         self.box = box
         self.settings = settings        
-        Settings.OcrTextSearch = True
-        Settings.OcrTextRead = True
+        #Settings.OcrTextSearch = True
+        #Settings.OcrTextRead = True
         self.loadingChangePixelsMdpi = self.settings.getint("Page", "loadingChangePixelsMdpi")
         self.loadingTimeout = self.settings.getint("Page", "loadingTimeout")
         self.loadingBox = Sikuli.Region(self.box.getX(), self.box.getY(), self.box.getW(), self.box.getH())

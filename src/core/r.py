@@ -7,28 +7,16 @@ Created on 15.05.2013
 
 class Resource:
     
-    #auth_page_location
-    actionAllowUseLocation = "res/pages/ios/auth_page_location/useLocationBtniOS.png"
+    #accept_terms_page
+    acceptAndContinueBtn = "res/pages/android/hdpi/auth_page/acceptAndContinue.png"
        
-    #auth_page    
-    fbAuthBtniOS = "res/pages/ios/auth_page/fbAuthBtniOS.png"
+    #auth_page
     fbAuthBtnAndroidHdpi = "res/pages/android/hdpi/auth_page/fbAuthBtn.png"
-    authSelectionTitleAndroiHdpi = "res/pages/android/hdpi/auth_page/authSelectionLabel.png"
-    agreeTermsBtniOS = "res/pages/ios/auth_page/agreeTermsBtniOS.png"
-    
-    # fb_auth_page (iOS)
-    fbEmailFieldiOS        = "res/pages/ios/fb_auth/fbEmailFieldiOS.png"
-    fbPasswordFieldiOS    = "Password"
-    fbLoginBtniOS         = "res/pages/ios/fb_auth/fbLoginBtniOS.png"
-    fbConfirmBtniOS       = "res/pages/ios/fb_auth/fbConfirmBtniOS.png"
-    
-    fbEmailFieldiOS_ru = "res/pages/ios/fb_auth/fbEmailFieldiOS_ru.png"
-    fbPasswordFieldiOS_ru    = "res/pages/ios/fb_auth/fbPasswordFieldiOS_ru.png"
-    fbLoginBtniOS_ru         = "res/pages/ios/fb_auth/fbLoginBtniOS_ru.png"
-    
+    authSelectionTitleAndroiHdpi = "res/pages/android/hdpi/auth_page/authSelectionLabel.png"    
+        
     # fb_auth_page (Android)
     fbEmailFieldAndroidHdpi        = "res/pages/android/hdpi/fb_auth/fbEmailField.png"
-    fbPasswordFieldAndroidHdpi    = "Password"
+    fbPasswordFieldAndroidHdpi    = "res/pages/android/hdpi/fb_auth/fbPasswordField.png"
     fbLoginBtnAndroidHdpi         = "res/pages/android/hdpi/fb_auth/fbLoginBtn.png"
     fbConfirmBtnAndroidHdpi       = "res/pages/android/hdpi/fb_auth/fbConfirmBtn.png"
     
@@ -36,6 +24,55 @@ class Resource:
     fbPasswordFieldAndroidHdpi_ru    = "res/pages/android/hdpi/fb_auth/fbPasswordField_ru.png"
     fbLoginBtnAndroidHdpi_ru         = "res/pages/android/hdpi/fb_auth/fbLoginBtn_ru.png"
 
+    # save_password_page
+    skipSavePasswordBtn = "res/pages/android/hdpi/save_password/skipSavePasswodBtn.png"
+    
+    #menu_page
+    openMenuBtn = "res/pages/android/hdpi/menu/openMenuBtn.png"
+    createLunchBtnActive = "res/pages/android/hdpi/menu/createLunchBtn_active.png"
+    createLunchBtnInactive = "res/pages/android/hdpi/menu/createLunchBtn_inactive.png"
+    myFriendsBtnActive = "res/pages/android/hdpi/menu/myFriendsBtn_active.png"
+    myFriendsBtnInactive = "res/pages/android/hdpi/menu/myFriendsBtn_inactive.png"
+    myProfileBtnActive = "res/pages/android/hdpi/menu/myProfileBtn_active.png"
+    myProfileBtnInactive = "res/pages/android/hdpi/menu/myProfileBtn_inactive.png"
+    
+    #create_lunch
+    openCitiesField = "res/pages/android/hdpi/create_lunch/openCitiesField.png"
+    moscowField = "res/pages/android/hdpi/create_lunch/moscowField.png"
+    selectPlaceField = "res/pages/android/hdpi/create_lunch/selectPlaceField.png"    
+    placeField = "res/pages/android/hdpi/create_lunch/placeField.png"
+    createLunchIcon = "res/pages/android/hdpi/create_lunch/createLunchIcon.png"
+    
+    #my_lunches
+    myLunchesTitle = "res/pages/android/hdpi/my_lunches/myLunchesTitle.png"
+    lunchField = "res/pages/android/hdpi/my_lunches/lunchField.png"
+    lunchDetailsTitle = "res/pages/android/hdpi/my_lunches/lunchDetailsTitle.png"
+    joinLunchBtn = "res/pages/android/hdpi/my_lunches/joinLunchBtn.png"
+    acceptJoinRequestBtn = "res/pages/android/hdpi/my_lunches/acceptJoinRequestBtn.png"
+    
+    #find_lunch
+    findLunchTitle = "res/pages/android/hdpi/find_lunch/findLunchTitle.png"
+    viewLunchesListIcon = "res/pages/android/hdpi/find_lunch/viewLunchesListIcon.png"
+    viewLunchDetails = "res/pages/android/hdpi/find_lunch/viewLunchDetails.png"
+    
+    #confirmation_dialog
+    confirmDialogBtn = "res/pages/android/hdpi/popup_dialog/confirmDialogBtn.png"
+    
+    #my_friends    
+    myFriendsTitle = "res/pages/android/hdpi/my_friends/myFriendsTitle.png"
+    findFriendsTitle = "res/pages/android/hdpi/my_friends/findFriendsTitle.png"
+    findFriendsListTitle = "res/pages/android/hdpi/my_friends/findFriendsListTitle.png"
+    findFriendsBtn = "res/pages/android/hdpi/my_friends/findFriendsBtn.png"
+    addToFriendsIcon = "res/pages/android/hdpi/my_friends/addToFriendsIcon.png"
+    addFriendIcon = "res/pages/android/hdpi/my_friends/addFriendIcon.png"
+    removeFromFriendsIcon = "res/pages/android/hdpi/my_friends/removeFromFriendsIcon.png"
+    
+    #my_profile
+    editProfileIcon = "res/pages/android/hdpi/my_profile/editProfileIcon.png"
+    viewProfileTitle = "res/pages/android/hdpi/my_profile/viewProfileTitle.png"
+    editProfileTitle = "res/pages/android/hdpi/my_profile/editProfileTitle.png"
+    applyChangesBtn = "res/pages/android/hdpi/my_profile/applyChangesBtn.png"
+    
         
     #core
     # iOS 7
@@ -85,21 +122,14 @@ class Resource:
     btnR = "res/pages/ios/keyboard/rLetteriOS.png"
     btnD = "res/pages/ios/keyboard/dLetteriOS.png"
     btnP = "res/pages/ios/keyboard/pLetteriOS.png"
-    btnK = "res/pages/ios/keyboard/kLetteriOS.png"    
-    
-
-    #lost
-    hophopLogoMdpi = "res/pages/android/mdpi/core/keyboardTop.png"
-    inviteFriendsTabMdpi = "res/pages/android/mdpi/core/keyboardTop.png"
-    upgdadeAppBtn_4_2_Mdpi = ""
-    remindBtn_4_2_Mdpi = ""    
-  
+    btnK = "res/pages/ios/keyboard/kLetteriOS.png"
     
     
 
 
 class ClientMessageConsts:
     TASK_DONE = "done"
+    TASK_FAILED = "failed"    
     TASK_EXIT = "~exit~" #in case we need to stop all clients
 
 

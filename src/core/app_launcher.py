@@ -19,16 +19,24 @@ class AppLauncher(object):
     
     @staticmethod
     def completeBoot(settings):
+        subprocess.call(["adb", "disconnect", settings.get("OS", "emulatorName")])
+        subprocess.call(["adb", "connect", settings.get("OS", "emulatorName")])
         while True:
             try:
                 time.sleep(3)
-                isBootComplete = subprocess.check_output(["adb", "shell", "getprop", "dev.bootcomplete", "-s", settings.get("OS", "emulatorName")])
+                isBootComplete = subprocess.check_output(["adb", "-s", settings.get("OS", "emulatorName"), "shell", "getprop", "dev.bootcomplete", "-s", settings.get("OS", "emulatorName")])
                 logging.info("Waiting the boot to complete...")
                 if int(isBootComplete):
                     logging.info("App booting -- DONE")
                     break
             except (ValueError, CalledProcessError):
                 pass
+        time.sleep(3)
+        if AppLauncher.buildNum:
+            logging.info("Resizing emulator window")
+            logging.info('%s (%s) [Running] - Oracle VM VirtualBox' % (settings.get("OS", "emulatorAvdName"), AppLauncher.buildNum))
+            subprocess.call(['wmctrl', '-r', '%s (%s) [Running] - Oracle VM VirtualBox' % (settings.get("OS", "emulatorAvdName"), AppLauncher.buildNum), '-e', '0,0,0,505,845'])
+        time.sleep(3)
 
     @staticmethod
     def prepareSnapshot(settings):
@@ -40,7 +48,8 @@ class AppLauncher(object):
                 time.sleep(5)
                 subprocess.call(('vboxmanage controlvm %s poweroff' % settings.get("OS", "emulatorAvdName")).split())
                 subprocess.call(('vboxmanage snapshot %s restore factory_reset' % settings.get("OS", "emulatorAvdName")).split())
-                subprocess.Popen(('player --vm-name %s' % settings.get("OS", "emulatorAvdName")).split())
+                subprocess.Popen(('vboxmanage startvm %s --type gui' % settings.get("OS", "emulatorAvdName")).split())
+                time.sleep(3)
                 AppLauncher.completeBoot(settings)                
                 subprocess.call(["adb", "-s", settings.get("OS", "emulatorName"), "uninstall", appName])
                 logging.info("Uninstalling the app -- DONE")
@@ -78,7 +87,8 @@ class AppLauncher(object):
         if settings.get("OS", "name") == TestPlanConsts.ANDROID_OS:
             if not settings.getboolean("OS", "debug"):
                 subprocess.call(('vboxmanage snapshot %s restore %s' % (settings.get("OS", "emulatorAvdName"), AppLauncher.buildNum)).split())
-                subprocess.Popen(('player --vm-name %s' % settings.get("OS", "emulatorAvdName")).split())
+                subprocess.Popen(('vboxmanage startvm %s --type gui' % settings.get("OS", "emulatorAvdName")).split())
+                time.sleep(3)
                 AppLauncher.completeBoot(settings)
                 time.sleep(3)
                 subprocess.call(["adb", "-s", settings.get("OS", "emulatorName"),  "shell", "input", "keyevent", "82"])
@@ -105,7 +115,8 @@ class AppLauncher(object):
     def closeEmulator(settings):
         if settings.get("OS", "name") == TestPlanConsts.ANDROID_OS:
             try:
-                subprocess.check_output("taskkill /F /IM player.exe".split())
+                subprocess.call(('vboxmanage controlvm %s poweroff' % settings.get("OS", "emulatorAvdName")).split())
+		subprocess.call(('vboxmanage controlvm %s poweroff' % settings.get("OS", "emulatorAvdName")).split())
             except:
                 logging.info("No emulators were found")
         if settings.get("OS", "name") == TestPlanConsts.X_OS:

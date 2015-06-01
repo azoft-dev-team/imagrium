@@ -7,7 +7,7 @@ import sys
 
 import Sikuli
 from org.sikuli.basics import Debug
-from org.sikuli.script import ImagePath
+from org.sikuli.basics import ImageLocator
 import os
 
 def _stripPackagePrefix(module_name):
@@ -50,12 +50,10 @@ class SikuliImporter:
         def load_module(self, module_name):
             if _debug(): print "SikuliLoader.load_module", module_name, self.path
             module_name = _stripPackagePrefix(module_name)
-            if ImagePath.add(self.path):
-              if _debug(): print "SikuliLoader.load_module: ImagePath add:", self.path
-            else:
-              if _debug(): print "SikuliLoader.load_module: ImagePath not added:", self.path
-              return None
-            Sikuli.addModPath(self.path)
+            p = ImageLocator.addImagePath(self.path)
+            #if _debug(): print "SikuliLoader.load_module: ImageLocator returned path:", p
+            if not p: return None
+            Sikuli.addModPath(p)
             return self._load_module(module_name)
 
     def _find_module(self, module_name, fullpath):
@@ -66,6 +64,7 @@ class SikuliImporter:
         return None
 
     def find_module(self, module_name, package_path):
+        if _debug(): print "SikuliImporter.find_module", module_name, package_path
         module_name = _stripPackagePrefix(module_name)
         if module_name[0:1] == "*": 
             return None
@@ -73,11 +72,6 @@ class SikuliImporter:
             paths = package_path
         else:
             paths = sys.path
-        if _debug(): 
-          print "SikuliImporter.find_module", module_name
-          for e in paths:
-            print e
-          print "SikuliImporter.find_module --- end ---"
         for path in paths:
             mod = self._find_module(module_name, path)
             if mod:

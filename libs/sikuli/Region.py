@@ -4,7 +4,7 @@
 
 from org.sikuli.basics import Debug
 from org.sikuli.script import Region as JRegion
-from org.sikuli.script import ObserverCallBack
+from org.sikuli.script import SikuliEventAdapter
 from org.sikuli.script.Constants import *
 import sys
 import inspect
@@ -12,7 +12,7 @@ import inspect
 DEBUG=False
 
 class Region(JRegion):
-
+    
     # support for with:
     # override all global sikuli functions by this region's methods.
     def __enter__(self):
@@ -39,7 +39,7 @@ class Region(JRegion):
         dict = sys.modules['__main__'].__dict__
         for name in self._global_funcs.keys():
             dict[name] = self._global_funcs[name]
-            if DEBUG and name == 'checkWith':
+            if DEBUG and name == 'checkWith': 
                 print "with restore: %s"%(str(dict[name])[1:])
         self._global_funcs = None
 
@@ -62,38 +62,48 @@ class Region(JRegion):
         return JRegion.text(self).encode("utf8")
 
 # observe(): Special setup for Jython
-# assures, that in any case the same region object is used
-    def onAppear(self, target, handler = None):
-        if not handler:
-            return self.onAppearJ(target, None)
-        class AnonyObserver(ObserverCallBack):
-            def appeared(self, event):
+    def onAppear(self, target, handler):
+        class AnonyObserver(SikuliEventAdapter):
+            def targetAppeared(self, event):
                 handler(event)
-        return self.onAppearJ(target, AnonyObserver())
-
-    def onVanish(self, target, handler = None):
-        if not handler:
-            return self.onVanishJ(target, None)
-        class AnonyObserver(ObserverCallBack):
-            def vanished(self, event):
+        return JRegion.onAppear(self, target, AnonyObserver())
+    
+    def onVanish(self, target, handler):
+        class AnonyObserver(SikuliEventAdapter):
+            def targetVanished(self, event):
                 handler(event)
-        return self.onVanishJ(target, AnonyObserver())
+        return JRegion.onVanish(self, target, AnonyObserver())
 
-    def onChange(self, arg1=0, arg2=None):
+    def onChange(self, arg1, arg2=None):
+
         if isinstance(arg1, int):
             min_size = arg1
             handler = arg2
         else:
             if (arg2 != None):
                 raise Exception("onChange: Invalid parameters set")
-            min_size = 0
+            min_size = None
             handler = arg1
-        if not handler:
-            return self.onChangeJ(min_size, None)
-        class AnonyObserver(ObserverCallBack):
-            def changed(self, event):
+        
+        class AnonyObserver(SikuliEventAdapter):
+            def targetChanged(self, event):
                 handler(event)
-        return self.onChangeJ(min_size, AnonyObserver())
-
+                
+        if min_size != None:
+            return JRegion.onChange(self, min_size, AnonyObserver())
+        return JRegion.onChange(self, AnonyObserver())
+    
     def observe(self, time=FOREVER, background=False):
-        return self.observeJ(time, background)
+        if not background:
+            return JRegion.observe(self, time)
+        else:
+            if(self.getEvtMgr()) == None:
+                Debug.error("Jython Region: observe: nothing to observe")
+                return None
+            else:
+                r = (JRegion(self))
+                e = self.getEvtMgr()
+                e.setRegion(r)
+                r.setEvtMgr(e)
+                r.setObserveScanRate(self.getObserveScanRate())
+                return r.observeInBackground(time)

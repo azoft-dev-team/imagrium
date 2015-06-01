@@ -13,6 +13,7 @@ import shutil
 import time
 import unittest
 from src.core.r import ClientMessageConsts
+import subprocess
 
 class AppTestCase(unittest.TestCase):
     
@@ -32,6 +33,9 @@ class AppTestCase(unittest.TestCase):
         
         self.initialPage = app.launch(_importClassByName(self.settings.get("Page", "launchPageClass")), app.box)
         self.screenShotsCaptured = 0 #will increment with parameter with each capture
+        #Reset server state
+        if not self.settings.getboolean("OS", "debug") and self.settings.get("System", "useResetScript"):
+            subprocess.call(self.settings.get("System", "serverResetScript").split())
          
     def tearDown(self):
         # I see this as the only way to apply a screenshot in case we have a failure before moving on to

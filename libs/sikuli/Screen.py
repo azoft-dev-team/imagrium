@@ -2,18 +2,17 @@
 # Released under the MIT License.
 # modified RaiMan 2013
 
+import inspect
 import types
 import sys
 
 from org.sikuli.script import Screen as JScreen
 from org.sikuli.basics import Debug
 from Region import *
-import Sikuli
 
 class Screen(Region):
     def __init__(self, id=None):
         try:
-            # Debug.log(3, "Screen.py: init: %s", id)
             if id != None:
                 r = JScreen.getBounds(id)
                 s = JScreen.getScreen(id)
@@ -23,7 +22,6 @@ class Screen(Region):
                 s = JScreen.getScreen(id)
             (self.x, self.y, self.w, self.h) = (int(r.getX()), int(r.getY()), \
                             int(r.getWidth()), int(r.getHeight()))
-            # Debug.log(3, "Screen.py: before initScreen: %s", s)
             self.initScreen(s)
         except:
             Debug.log(3, "Jython: init: exception while initializing Screen\n%s", sys.exc_info(0))
@@ -33,10 +31,8 @@ class Screen(Region):
     def getNumberScreens(cls):
         return JScreen.getNumberScreens()
 
-#TODO check wether needed (Region.setROI() resets to bounds too)
-#    def resetROI(self):
-#        # Debug.log(3, "Screen.py: resetROI: %s", self.getScreen())
-#       self.setRect(self.getScreen().getBounds())
+    def resetROI(self):
+        self.setRect(self.getScreen().getBounds())
 
     def getBounds(self):
         return self.getScreen().getBounds()
@@ -80,6 +76,23 @@ class Screen(Region):
             return scr.capture(args[0], args[1], args[2], args[3]).getFile()
         else:
             return None
+
+    def _exposeAllMethods(self, mod):
+        exclude_list = [ 'class', 'classDictInit', 'clone', 'equals', 'finalize',
+                        'getClass', 'hashCode', 'notify', 'notifyAll',
+                        'toGlobalCoord', 'toString', 'getLocationFromPSRML', 'getRegionFromPSRM',
+                       'capture', 'selectRegion', 'create', 'observeInBackground', 'waitAll',
+                        'updateSelf', 'findNow', 'findAllNow', 'getEventManager']
+        dict = sys.modules[mod].__dict__
+        for name in dir(self):
+            if name in exclude_list: continue
+            try:
+                if not inspect.ismethod(getattr(self,name)): continue
+            except:
+                continue
+            if name[0] != '_' and name[:7] != 'super__':
+                dict[name] = eval("self."+name)
+                if name == 'checkWith': Debug.log(3, "%s %s", name, str(dict[name])[1:])
 
     def toString(self):
         return self.getScreen().toString()
